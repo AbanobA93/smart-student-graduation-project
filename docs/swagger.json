@@ -1,0 +1,155 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Smart Student Management System — RESTful API",
+    "description": "Clean Architecture ASP.NET Core Web API with Full UUIDv7 Schema, Role-Domain Isolated JWT Authentication (Admin, Teacher, Student), Encapsulated Grading (F, C, B, A, A+), and Daily Attendance Tracking.",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7145",
+      "description": "Local HTTPS Development Server"
+    },
+    {
+      "url": "http://localhost:5145",
+      "description": "Local HTTP Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your JWT Access Token obtained from /api/auth/login/{domain}."
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/api/Auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Unified domain-isolated login endpoint. Returns 401 'Wrong email or password.' on any credential or domain mismatch.",
+        "responses": { "200": { "description": "Success" }, "401": { "description": "Wrong email or password." } }
+      }
+    },
+    "/api/Auth/login/admin": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Admin-only domain login portal. Rejects Teacher and Student accounts with 'Wrong email or password.'.",
+        "responses": { "200": { "description": "Success" }, "401": { "description": "Wrong email or password." } }
+      }
+    },
+    "/api/Auth/login/teacher": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Teacher-only domain login portal. Rejects Admin and Student accounts with 'Wrong email or password.'.",
+        "responses": { "200": { "description": "Success" }, "401": { "description": "Wrong email or password." } }
+      }
+    },
+    "/api/Auth/login/student": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Student-only domain login portal. Rejects Admin and Teacher accounts with 'Wrong email or password.'.",
+        "responses": { "200": { "description": "Success" }, "401": { "description": "Wrong email or password." } }
+      }
+    },
+    "/api/Auth/register/student": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registers a new Student user and Student profile.",
+        "responses": { "201": { "description": "Created" }, "409": { "description": "Conflict" } }
+      }
+    },
+    "/api/Auth/register/teacher": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registers a new Teacher user and Teacher profile (Admin only).",
+        "responses": { "201": { "description": "Created" }, "403": { "description": "Forbidden" } }
+      }
+    },
+    "/api/ClassRooms": {
+      "get": { "tags": ["ClassRooms"], "summary": "List all classrooms.", "responses": { "200": { "description": "Success" } } },
+      "post": { "tags": ["ClassRooms"], "summary": "Create a new classroom (Admin only).", "responses": { "201": { "description": "Created" } } }
+    },
+    "/api/ClassRooms/{id}": {
+      "get": { "tags": ["ClassRooms"], "summary": "Get classroom by UUID.", "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["ClassRooms"], "summary": "Soft-delete classroom by UUID (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Students": {
+      "get": { "tags": ["Students"], "summary": "Get paginated list of students with AsNoTracking (Admin & Teacher).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Students/{id}": {
+      "get": { "tags": ["Students"], "summary": "Get student details by UUID.", "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Students"], "summary": "Update student profile (Admin only).", "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Students"], "summary": "Soft-delete student (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Students/assign-classroom": {
+      "post": { "tags": ["Students"], "summary": "Assign student to a classroom (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Students/enroll-course": {
+      "post": { "tags": ["Students"], "summary": "Enroll student in a course for an academic semester (Admin only).", "responses": { "201": { "description": "Created" } } }
+    },
+    "/api/Students/{id}/photo": {
+      "post": { "tags": ["Students"], "summary": "Upload student profile photo.", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Teachers": {
+      "get": { "tags": ["Teachers"], "summary": "Get paginated list of teachers (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Teachers/{id}": {
+      "get": { "tags": ["Teachers"], "summary": "Get teacher details by UUID.", "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Teachers"], "summary": "Soft-delete teacher (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Courses": {
+      "get": { "tags": ["Courses"], "summary": "Get paginated list of courses.", "responses": { "200": { "description": "Success" } } },
+      "post": { "tags": ["Courses"], "summary": "Create a new course (Admin only).", "responses": { "201": { "description": "Created" } } }
+    },
+    "/api/Courses/{id}": {
+      "get": { "tags": ["Courses"], "summary": "Get course details by UUID.", "responses": { "200": { "description": "Success" } } },
+      "put": { "tags": ["Courses"], "summary": "Update course details (Admin only).", "responses": { "200": { "description": "Success" } } },
+      "delete": { "tags": ["Courses"], "summary": "Soft-delete course (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Courses/assign-teacher": {
+      "post": { "tags": ["Courses"], "summary": "Assign teacher to a course (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Grades": {
+      "post": {
+        "tags": ["Grades"],
+        "summary": "Teacher adds a grade for an enrolled student in their assigned course (validates 0..100, auto-calculates F, C, B, A, A+).",
+        "responses": { "201": { "description": "Created" }, "400": { "description": "The number should be 0 or more. / The maximum is 100." }, "403": { "description": "Forbidden" } }
+      }
+    },
+    "/api/Grades/{id}": {
+      "put": { "tags": ["Grades"], "summary": "Teacher updates a grade in their assigned course.", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Grades/course/{courseId}": {
+      "get": { "tags": ["Grades"], "summary": "Teacher views all grades for a course they teach.", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Grades/my-grades": {
+      "get": { "tags": ["Grades"], "summary": "Student views ONLY their own grades (extracted from JWT claims).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Attendance": {
+      "post": { "tags": ["Attendance"], "summary": "Teacher marks daily attendance for a student in their assigned course.", "responses": { "201": { "description": "Created" } } }
+    },
+    "/api/Attendance/course/{courseId}": {
+      "get": { "tags": ["Attendance"], "summary": "Teacher views attendance records for a course they teach.", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/Attendance/my-attendance": {
+      "get": { "tags": ["Attendance"], "summary": "Student views ONLY their own attendance history (extracted from JWT claims).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/admin/users": {
+      "get": { "tags": ["AdminDashboard"], "summary": "List all users paginated (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/admin/users/role": {
+      "put": { "tags": ["AdminDashboard"], "summary": "Change user role between Admin, Teacher, and Student (Admin only).", "responses": { "200": { "description": "Success" } } }
+    },
+    "/api/admin/statistics": {
+      "get": { "tags": ["AdminDashboard"], "summary": "View system-wide statistics (Admin only).", "responses": { "200": { "description": "Success" } } }
+    }
+  }
+}

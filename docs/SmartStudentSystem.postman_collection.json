@@ -1,0 +1,281 @@
+{
+  "info": {
+    "_postman_id": "8e44b190-5591-4a7b-9d32-019283746501",
+    "name": "Smart Student Management System — Graduation Project API",
+    "description": "Complete Postman Collection for the Smart Student Management System Web API (.NET 10 LTS). Includes automatic JWT token capture on Login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:7145", "type": "string" },
+    { "key": "jwt_token", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{jwt_token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Auth & Domain Portals",
+      "item": [
+        {
+          "name": "Login — Admin Domain Portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.accessToken) {",
+                  "    pm.collectionVariables.set('jwt_token', res.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login/admin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@smartstudent.edu\",\n  \"password\": \"Admin@12345\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login — Teacher Domain Portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.accessToken) {",
+                  "    pm.collectionVariables.set('jwt_token', res.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login/teacher",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teacher1@smartstudent.edu\",\n  \"password\": \"Teacher@12345\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login — Student Domain Portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res && res.data && res.data.accessToken) {",
+                  "    pm.collectionVariables.set('jwt_token', res.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login/student",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student1@smartstudent.edu\",\n  \"password\": \"Student@12345\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register/student",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Ahmed Hassan\",\n  \"email\": \"student1@smartstudent.edu\",\n  \"password\": \"Student@12345\",\n  \"studentNumber\": \"STU-2026-001\",\n  \"dateOfBirth\": \"2005-05-15\",\n  \"gender\": 1,\n  \"address\": \"Cairo, Egypt\",\n  \"classRoomId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Teacher (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register/teacher",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Mohamed Ali\",\n  \"email\": \"teacher1@smartstudent.edu\",\n  \"password\": \"Teacher@12345\",\n  \"employeeNumber\": \"TCH-2026-001\",\n  \"department\": \"Computer Science\",\n  \"specialization\": \"Software Engineering\",\n  \"hireDate\": \"2024-09-01\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. ClassRooms",
+      "item": [
+        {
+          "name": "Get All ClassRooms",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/ClassRooms" }
+        },
+        {
+          "name": "Create ClassRoom (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ClassRooms",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 12 - Class A\",\n  \"gradeLevel\": 12,\n  \"capacity\": 35,\n  \"academicYear\": 2026\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Students & Enrollment",
+      "item": [
+        {
+          "name": "Get Paginated Students",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/Students?PageNumber=1&PageSize=10" }
+        },
+        {
+          "name": "Assign Student to ClassRoom (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Students/assign-classroom",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"00000000-0000-0000-0000-000000000000\",\n  \"classRoomId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Enroll Student in Course (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Students/enroll-course",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"00000000-0000-0000-0000-000000000000\",\n  \"courseId\": \"00000000-0000-0000-0000-000000000000\",\n  \"academicYear\": 2026,\n  \"semester\": 1\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Courses & Teachers",
+      "item": [
+        {
+          "name": "Get Paginated Courses",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/Courses?PageNumber=1&PageSize=10" }
+        },
+        {
+          "name": "Create Course (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Courses",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseCode\": \"CS101\",\n  \"title\": \"Introduction to Object-Oriented Programming\",\n  \"description\": \"Core C#, SOLID Principles, and Clean Architecture\",\n  \"creditHours\": 3,\n  \"teacherId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Teacher to Course (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Courses/assign-teacher",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseId\": \"00000000-0000-0000-0000-000000000000\",\n  \"teacherId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Grade Management",
+      "item": [
+        {
+          "name": "Add Grade (Teacher Only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Grades",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"00000000-0000-0000-0000-000000000000\",\n  \"courseId\": \"00000000-0000-0000-0000-000000000000\",\n  \"examType\": 4,\n  \"examDate\": \"2026-10-15\",\n  \"score\": 96.5,\n  \"remarks\": \"Outstanding performance\"\n}"
+            }
+          }
+        },
+        {
+          "name": "View My Grades (Student Only)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/Grades/my-grades" }
+        }
+      ]
+    },
+    {
+      "name": "6. Attendance Tracking",
+      "item": [
+        {
+          "name": "Mark Daily Attendance (Teacher Only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/Attendance",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"00000000-0000-0000-0000-000000000000\",\n  \"courseId\": \"00000000-0000-0000-0000-000000000000\",\n  \"attendanceDate\": \"2026-10-17\",\n  \"status\": 1,\n  \"remarks\": \"On time\"\n}"
+            }
+          }
+        },
+        {
+          "name": "View My Attendance History (Student Only)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/Attendance/my-attendance" }
+        }
+      ]
+    },
+    {
+      "name": "7. Admin Dashboard",
+      "item": [
+        {
+          "name": "List All Users (Admin Only)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/admin/users?PageNumber=1&PageSize=10" }
+        },
+        {
+          "name": "Change User Role (Admin Only)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/admin/users/role",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"00000000-0000-0000-0000-000000000000\",\n  \"newRole\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "Get System Statistics (Admin Only)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/admin/statistics" }
+        }
+      ]
+    }
+  ]
+}
